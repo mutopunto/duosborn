@@ -610,12 +610,18 @@ footer{text-align:center;color:#a698ad;padding:22px;font-size:.9rem;border-top:1
  <div class="panel">
   <h2>🎯 Difficoltà del quiz</h2>
   <p class="muted">Cambia quante risposte corrette servono per l'obiettivo di oggi e quante alternative (e quanto simili tra loro) ti propone il quiz.</p>
-  <div class="difficulty-grid" id="difficultyGrid"></div>
+  <label for="difficultySelect">Livello</label><select id="difficultySelect" class="study-input"></select>
+  <p class="study-muted" id="difficultyBlurb"></p>
  </div>
  <div class="panel">
   <h2>🎨 Stile visivo</h2>
   <p class="muted">Scegli la palette che preferisci: il cambiamento è immediato e si applica a tutta l'app.</p>
-  <div class="theme-grid" id="themeGrid"></div>
+  <label for="themeSelect">Palette</label><select id="themeSelect" class="study-input"></select>
+  <p class="study-muted" id="themeBlurb"></p>
+ </div>
+ <div class="panel">
+  <h2>🔊 Audio</h2>
+  <p class="muted">Nessun sito web, questa app compresa, può scegliere al posto tuo quale microfono o altoparlante del telefono/PC usare: è una scelta che i browser riservano solo alle impostazioni di sistema. Per cambiare microfono o altoparlante usato dall'app, cambia quello predefinito nelle impostazioni audio del telefono/PC: l'app lo segue automaticamente, senza bisogno di nessuna impostazione qui dentro.</p>
  </div>
  <div class="panel">
   <h2>📚 Categorie attive</h2>
@@ -1390,13 +1396,10 @@ renderDailyGate();
     difficile:{label:'🔥 Difficile',blurb:'20 risposte corrette al giorno, con 5 alternative tra cui scegliere, scelte apposta anche dalla stessa categoria per confondere di più. Allenamento serio.'}
   };
   function renderSettingsDifficulty(){
-    const grid=$('#difficultyGrid');if(!grid)return;
+    const sel=$('#difficultySelect');if(!sel)return;
     const current=currentDifficulty();
-    grid.innerHTML=DIFFICULTY_LEVELS.map(level=>{const meta=DIFFICULTY_META[level];return `<button type="button" class="difficulty-card${level===current?' active':''}" data-difficulty="${level}" aria-pressed="${level===current}"><strong>${meta.label}</strong><span>${meta.blurb}</span></button>`;}).join('');
-    $$('.difficulty-card',grid).forEach(b=>b.addEventListener('click',()=>{
-      studyState.settings.difficulty=b.dataset.difficulty;persist();
-      renderSettingsDifficulty();renderStudyStats();renderHomeDashboard();
-    }));
+    sel.innerHTML=DIFFICULTY_LEVELS.map(level=>`<option value="${level}"${level===current?' selected':''}>${DIFFICULTY_META[level].label}</option>`).join('');
+    if($('#difficultyBlurb'))$('#difficultyBlurb').textContent=DIFFICULTY_META[current].blurb;
   }
   const THEME_ORDER=['default','smeraldo','oceano','melograno'];
   const THEME_META={
@@ -1408,13 +1411,18 @@ renderDailyGate();
   function currentTheme(){const t=studyState.settings&&studyState.settings.theme;return THEME_ORDER.includes(t)?t:'default'}
   function applyTheme(){document.documentElement.setAttribute('data-theme',currentTheme());}
   function renderSettingsTheme(){
-    const grid=$('#themeGrid');if(!grid)return;
+    const sel=$('#themeSelect');if(!sel)return;
     const current=currentTheme();
-    grid.innerHTML=THEME_ORDER.map(key=>{const meta=THEME_META[key];return `<button type="button" class="theme-card theme-card-${key}${key===current?' active':''}" data-theme-choice="${key}" aria-pressed="${key===current}"><span class="theme-card-swatch" aria-hidden="true"></span><strong>${meta.label}</strong><span>${meta.blurb}</span></button>`;}).join('');
-    $$('.theme-card',grid).forEach(b=>b.addEventListener('click',()=>{
-      studyState.settings.theme=b.dataset.themeChoice;persist();applyTheme();renderSettingsTheme();
-    }));
+    sel.innerHTML=THEME_ORDER.map(key=>`<option value="${key}"${key===current?' selected':''}>${THEME_META[key].label}</option>`).join('');
+    if($('#themeBlurb'))$('#themeBlurb').textContent=THEME_META[current].blurb;
   }
+  $('#difficultySelect')?.addEventListener('change',()=>{
+    studyState.settings.difficulty=$('#difficultySelect').value;persist();
+    renderSettingsDifficulty();renderStudyStats();renderHomeDashboard();
+  });
+  $('#themeSelect')?.addEventListener('change',()=>{
+    studyState.settings.theme=$('#themeSelect').value;persist();applyTheme();renderSettingsTheme();
+  });
   function renderSettingsCategories(){
     const list=$('#settingsCategoryList');if(!list)return;
     const names=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))]
