@@ -214,6 +214,10 @@ textarea{min-height:130px;resize:vertical}
 @media(max-width:700px){.mode-choices{grid-template-columns:1fr}.mode-choice{min-height:0;padding:18px}.mode-choice-cta{margin-top:18px}}
 
 /* ---------- Home ---------- */
+/* Su richiesta, la Home mostra SOLO il sentiero dei livelli: hero, metriche compatte e le due
+   colonne "prossimo passo"/"ultimi 7 giorni" restano nel markup (così il JS che le popola non
+   va toccato) ma sono nascoste qui. Selettori sui figli diretti di #home per restare precisi. */
+#home>.home-hero,#home>.home-metrics-compact,#home>.home-columns{display:none!important}
 .home-hero{padding:clamp(20px,3vw,32px);border:1px solid var(--violet-soft);border-radius:var(--r-xl);background:radial-gradient(ellipse at 90% 0%,#49304f 0%,transparent 48%),linear-gradient(140deg,var(--plum),var(--ink));margin-bottom:var(--sp-3);box-shadow:var(--shadow-1)}
 .home-kicker{font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-soft);font-weight:800}
 .home-hero h2{font-size:clamp(1.5rem,4vw,2.25rem);color:var(--gold-pale);margin:6px 0;border:none;padding:0}
@@ -369,6 +373,10 @@ footer{text-align:center;color:#a698ad;padding:22px;font-size:.9rem;border-top:1
 .difficulty-card strong,.theme-card strong{color:var(--gold-pale);font-size:1.02rem}
 .difficulty-card span,.theme-card span{color:var(--muted);font-size:.88rem;line-height:1.45}
 .difficulty-card.active,.theme-card.active{border-color:var(--gold-bright);box-shadow:0 0 0 1px #e1bd7855 inset;background:linear-gradient(145deg,#241c2c,#19131d)}
+.custom-difficulty-controls{margin-top:12px;display:flex;flex-direction:column;gap:10px;max-width:420px}
+.custom-difficulty-controls>div>label{display:block;margin-bottom:4px}
+.custom-difficulty-checkbox{display:flex;align-items:flex-start;gap:8px;font-size:.92rem;color:var(--muted)}
+#customDifficultyControls[hidden]{display:none}
 .theme-card-swatch{display:block;width:100%;height:34px;border-radius:8px;margin-bottom:2px;background:radial-gradient(ellipse at 90% 0%,#49304f 0%,transparent 48%),linear-gradient(140deg,var(--plum),var(--ink)),linear-gradient(135deg,var(--gold-dark),var(--gold-bright));background-blend-mode:normal;border:1px solid var(--violet-border)}
 .theme-card-smeraldo .theme-card-swatch{filter:hue-rotate(130deg)}
 .theme-card-oceano .theme-card-swatch{filter:hue-rotate(205deg)}
@@ -627,6 +635,11 @@ footer{text-align:center;color:#a698ad;padding:22px;font-size:.9rem;border-top:1
   <p class="muted">Cambia quante risposte corrette servono per l'obiettivo di oggi e quante alternative (e quanto simili tra loro) ti propone il quiz.</p>
   <label for="difficultySelect">Livello</label><select id="difficultySelect" class="study-input"></select>
   <p class="study-muted" id="difficultyBlurb"></p>
+  <div id="customDifficultyControls" class="custom-difficulty-controls" hidden>
+   <div><label for="customDailyGoal">Obiettivo di oggi (risposte corrette)</label><input type="number" id="customDailyGoal" class="study-input" min="1" max="200" step="1"></div>
+   <div><label for="customChoiceCount">Alternative mostrate nel quiz</label><input type="number" id="customChoiceCount" class="study-input" min="2" max="10" step="1"></div>
+   <label class="custom-difficulty-checkbox"><input type="checkbox" id="customSameCategory"> Pesca le alternative sbagliate anche dalla stessa categoria, quando possibile (più simili, quindi più difficili da distinguere)</label>
+  </div>
  </div>
  <div class="panel">
   <h2>🎨 Stile visivo</h2>
@@ -1479,15 +1492,28 @@ renderDailyGate();
 
   // ---------- Impostazioni: difficoltà, stile visivo, categorie attive ----------
   const DIFFICULTY_META={
-    facile:{label:'🙂 Facile',blurb:'5 risposte corrette al giorno come obiettivo, con 3 alternative tra cui scegliere. Comodo per iniziare o nei giorni più di corsa.'},
+    facilissima:{label:'🌱 Facilissima',blurb:'5 risposte corrette al giorno come obiettivo, con 3 alternative tra cui scegliere. Il ritmo più leggero, comodo nei primissimi giorni.'},
+    facile:{label:'🙂 Facile',blurb:'8 risposte corrette al giorno come obiettivo, con 3 alternative tra cui scegliere. Comodo per iniziare o nei giorni più di corsa.'},
     normale:{label:'💪 Normale',blurb:'10 risposte corrette al giorno, con 4 alternative tra cui scegliere. Il ritmo consigliato per la maggior parte delle persone.'},
-    difficile:{label:'🔥 Difficile',blurb:'20 risposte corrette al giorno, con 5 alternative tra cui scegliere, scelte apposta anche dalla stessa categoria per confondere di più. Allenamento serio.'}
+    difficile:{label:'🔥 Difficile',blurb:'15 risposte corrette al giorno, con 5 alternative tra cui scegliere, scelte apposta anche dalla stessa categoria per confondere di più. Allenamento serio.'},
+    estrema:{label:'🏆 Estrema',blurb:'25 risposte corrette al giorno, con 6 alternative tra cui scegliere, quasi sempre pescate dalla stessa categoria. Solo per chi vuole spingere al massimo.'},
+    personalizzata:{label:'🛠️ Personalizzata',blurb:'Decidi tu l\'obiettivo di oggi, quante alternative mostrare nel quiz e se quelle sbagliate devono essere pescate dalla stessa categoria per essere più simili (e quindi più difficili da distinguere).'}
   };
   function renderSettingsDifficulty(){
     const sel=$('#difficultySelect');if(!sel)return;
     const current=currentDifficulty();
     sel.innerHTML=DIFFICULTY_LEVELS.map(level=>`<option value="${level}"${level===current?' selected':''}>${DIFFICULTY_META[level].label}</option>`).join('');
     if($('#difficultyBlurb'))$('#difficultyBlurb').textContent=DIFFICULTY_META[current].blurb;
+    const customBox=$('#customDifficultyControls');
+    if(customBox){
+      customBox.hidden=current!=='personalizzata';
+      if(current==='personalizzata'){
+        const c=customDifficultySettings();
+        if($('#customDailyGoal'))$('#customDailyGoal').value=c.dailyGoal;
+        if($('#customChoiceCount'))$('#customChoiceCount').value=c.choiceCount;
+        if($('#customSameCategory'))$('#customSameCategory').checked=c.sameCategoryDistractors;
+      }
+    }
   }
   const THEME_ORDER=['default','smeraldo','oceano','melograno'];
   const THEME_META={
@@ -1507,6 +1533,24 @@ renderDailyGate();
   $('#difficultySelect')?.addEventListener('change',()=>{
     studyState.settings.difficulty=$('#difficultySelect').value;persist();
     renderSettingsDifficulty();renderStudyStats();renderHomeDashboard();
+  });
+  // Livello "Personalizzata": i 3 controlli sotto scrivono in studyState.settings.customDifficulty,
+  // letto da customDifficultySettings() (vedi più sotto) ogni volta che serve difficultySettings().
+  function ensureCustomDifficultyObj(){
+    if(!studyState.settings.customDifficulty||typeof studyState.settings.customDifficulty!=='object')studyState.settings.customDifficulty={dailyGoal:10,choiceCount:4,sameCategoryDistractors:false};
+    return studyState.settings.customDifficulty;
+  }
+  $('#customDailyGoal')?.addEventListener('change',()=>{
+    ensureCustomDifficultyObj().dailyGoal=Math.min(200,Math.max(1,Math.round(Number($('#customDailyGoal').value)||10)));
+    persist();renderSettingsDifficulty();renderStudyStats();renderHomeDashboard();
+  });
+  $('#customChoiceCount')?.addEventListener('change',()=>{
+    ensureCustomDifficultyObj().choiceCount=Math.min(10,Math.max(2,Math.round(Number($('#customChoiceCount').value)||4)));
+    persist();renderSettingsDifficulty();renderStudyStats();renderHomeDashboard();
+  });
+  $('#customSameCategory')?.addEventListener('change',()=>{
+    ensureCustomDifficultyObj().sameCategoryDistractors=!!$('#customSameCategory').checked;
+    persist();renderSettingsDifficulty();
   });
   $('#themeSelect')?.addEventListener('change',()=>{
     studyState.settings.theme=$('#themeSelect').value;persist();applyTheme();renderSettingsTheme();
@@ -1580,7 +1624,7 @@ renderDailyGate();
   $('#settingsImportShortcut')?.addEventListener('click',()=>{$('#importDataButton')?.click();});
   $('#settingsResetDefaults')?.addEventListener('click',()=>{
     if(!confirm('Vuoi ripristinare difficoltà, stile visivo e categorie attive ai valori predefiniti? I progressi e le parole salvate non verranno toccati.'))return;
-    studyState.settings={excludedCategories:[],difficulty:'normale',theme:'default',voiceByLang:(studyState.settings.voiceByLang&&typeof studyState.settings.voiceByLang==='object')?studyState.settings.voiceByLang:{},unlockedModes:Array.isArray(studyState.settings.unlockedModes)?studyState.settings.unlockedModes:[]};
+    studyState.settings={excludedCategories:[],difficulty:'normale',theme:'default',voiceByLang:(studyState.settings.voiceByLang&&typeof studyState.settings.voiceByLang==='object')?studyState.settings.voiceByLang:{},unlockedModes:Array.isArray(studyState.settings.unlockedModes)?studyState.settings.unlockedModes:[],customDifficulty:{dailyGoal:10,choiceCount:4,sameCategoryDistractors:false}};
     persist();applyTheme();renderSettingsTab();renderStudyStats();renderHomeDashboard();
   });
   function renderSettingsTab(){renderSettingsDifficulty();renderSettingsTheme();renderSettingsCategories();renderSettingsAppInfo();populateAllVoiceSelects();}
@@ -2164,22 +2208,42 @@ renderDailyGate();
 
   // Extra learning tools, namespaced by selected language path.
   const STORE_KEY='masterclassStudy_v2';
-  function blankState(){return {en:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},de:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},es:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},settings:{excludedCategories:[],difficulty:'normale',theme:'default',voiceByLang:{},unlockedModes:[]}}}
-  const DIFFICULTY_LEVELS=['facile','normale','difficile'];
+  function blankState(){return {en:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},de:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},es:{saved:{},notes:{},stats:{correct:0,total:0,byWord:{},daily:{},listeningCorrect:0,listeningTotal:0}},settings:{excludedCategories:[],difficulty:'normale',theme:'default',voiceByLang:{},unlockedModes:[],customDifficulty:{dailyGoal:10,choiceCount:4,sameCategoryDistractors:false}}}}
+  const DIFFICULTY_LEVELS=['facilissima','facile','normale','difficile','estrema','personalizzata'];
   // Quante risposte corrette costituiscono "l'obiettivo di oggi" e quante opzioni mostrare nel
-  // quiz a scelta multipla, secondo la difficoltà scelta nelle impostazioni.
+  // quiz a scelta multipla, secondo la difficoltà scelta nelle impostazioni. "personalizzata" non
+  // ha una voce qui: i suoi valori vivono in studyState.settings.customDifficulty (vedi sotto).
   const DIFFICULTY_SETTINGS={
-   facile:{dailyGoal:5,choiceCount:3,sameCategoryDistractors:false},
+   facilissima:{dailyGoal:5,choiceCount:3,sameCategoryDistractors:false},
+   facile:{dailyGoal:8,choiceCount:3,sameCategoryDistractors:false},
    normale:{dailyGoal:10,choiceCount:4,sameCategoryDistractors:false},
-   difficile:{dailyGoal:20,choiceCount:5,sameCategoryDistractors:true}
+   difficile:{dailyGoal:15,choiceCount:5,sameCategoryDistractors:true},
+   estrema:{dailyGoal:25,choiceCount:6,sameCategoryDistractors:true}
   };
   function currentDifficulty(){const d=studyState.settings&&studyState.settings.difficulty;return DIFFICULTY_LEVELS.includes(d)?d:'normale'}
-  function difficultySettings(){return DIFFICULTY_SETTINGS[currentDifficulty()]}
+  // Valori del livello "personalizzata", con limiti di sicurezza (coerenti con quelli imposti
+  // in loadState/loadImportedSafe) e un ripiego sensato se l'utente non li ha ancora impostati.
+  function customDifficultySettings(){
+   const c=studyState.settings&&studyState.settings.customDifficulty;
+   const dailyGoal=c&&Number.isFinite(Number(c.dailyGoal))?Math.min(200,Math.max(1,Math.round(Number(c.dailyGoal)))):10;
+   const choiceCount=c&&Number.isFinite(Number(c.choiceCount))?Math.min(10,Math.max(2,Math.round(Number(c.choiceCount)))):4;
+   const sameCategoryDistractors=!!(c&&c.sameCategoryDistractors);
+   return {dailyGoal,choiceCount,sameCategoryDistractors};
+  }
+  function difficultySettings(){const d=currentDifficulty();return d==='personalizzata'?customDifficultySettings():DIFFICULTY_SETTINGS[d]}
   function excludedCategorySet(){const arr=studyState.settings&&Array.isArray(studyState.settings.excludedCategories)?studyState.settings.excludedCategories:[];return new Set(arr)}
   function loadState(){try{const x=JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(!x||typeof x!=='object')return blankState();const d=blankState();for(const m of ['en','de','es']){if(x[m]&&typeof x[m]==='object'){d[m].saved=x[m].saved&&typeof x[m].saved==='object'?x[m].saved:{};d[m].notes=x[m].notes&&typeof x[m].notes==='object'?x[m].notes:{};d[m].stats={...d[m].stats,...(x[m].stats||{}),byWord:{...d[m].stats.byWord,...((x[m].stats||{}).byWord||{})},daily:{...d[m].stats.daily,...((x[m].stats||{}).daily||{})}}}}
    if(x.settings&&typeof x.settings==='object'){
     if(Array.isArray(x.settings.excludedCategories))d.settings.excludedCategories=x.settings.excludedCategories.filter(c=>typeof c==='string').slice(0,200);
     if(DIFFICULTY_LEVELS.includes(x.settings.difficulty))d.settings.difficulty=x.settings.difficulty;
+    if(x.settings.customDifficulty&&typeof x.settings.customDifficulty==='object'){
+     const c=x.settings.customDifficulty;
+     d.settings.customDifficulty={
+      dailyGoal:Number.isFinite(Number(c.dailyGoal))?Math.min(200,Math.max(1,Math.round(Number(c.dailyGoal)))):10,
+      choiceCount:Number.isFinite(Number(c.choiceCount))?Math.min(10,Math.max(2,Math.round(Number(c.choiceCount)))):4,
+      sameCategoryDistractors:!!c.sameCategoryDistractors
+     };
+    }
     if(typeof x.settings.theme==='string')d.settings.theme=x.settings.theme.slice(0,64);
     if(x.settings.voiceByLang&&typeof x.settings.voiceByLang==='object'){
      const vbl={};
@@ -2499,6 +2563,14 @@ renderDailyGate();
     if(isRecord(x.settings)){
       if(Array.isArray(x.settings.excludedCategories))d.settings.excludedCategories=x.settings.excludedCategories.filter(c=>typeof c==='string').slice(0,200);
       if(DIFFICULTY_LEVELS.includes(x.settings.difficulty))d.settings.difficulty=x.settings.difficulty;
+      if(x.settings.customDifficulty&&typeof x.settings.customDifficulty==='object'){
+       const c=x.settings.customDifficulty;
+       d.settings.customDifficulty={
+        dailyGoal:Number.isFinite(Number(c.dailyGoal))?Math.min(200,Math.max(1,Math.round(Number(c.dailyGoal)))):10,
+        choiceCount:Number.isFinite(Number(c.choiceCount))?Math.min(10,Math.max(2,Math.round(Number(c.choiceCount)))):4,
+        sameCategoryDistractors:!!c.sameCategoryDistractors
+       };
+      }
       if(typeof x.settings.theme==='string')d.settings.theme=x.settings.theme.slice(0,64);
       if(Array.isArray(x.settings.unlockedModes))d.settings.unlockedModes=x.settings.unlockedModes.filter(c=>typeof c==='string'&&conf[c]).slice(0,20);
     }

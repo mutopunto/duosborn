@@ -1,4 +1,4 @@
-const CACHE_NAME = 'masterclass-lingue-v5';
+const CACHE_NAME = 'masterclass-lingue-v6';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-192-maskable.png', './icon-512-maskable.png'];
 
 self.addEventListener('install', (event) => {
