@@ -158,6 +158,11 @@ textarea{min-height:130px;resize:vertical}
 /* ---------- Rituale quotidiano / scelta percorso (invariati nella struttura) ---------- */
 #dailyGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(3,2,5,.94);backdrop-filter:blur(8px)}
 #dailyGate[hidden]{display:none!important}
+/* #modeChoices e #addCoursePanel condividono la classe .mode-choices (display:grid) con #addCourseList:
+   una regola d'autore con la stessa specificità di [hidden] dello user agent vince comunque su di esso,
+   quindi senza !important l'attributo "hidden" non nascondeva visivamente la griglia (bug preesistente,
+   notato aprendo "Aggiungi corso": la vecchia griglia restava visibile sotto il pannello nuovo). */
+#modeChoices[hidden],#addCoursePanel[hidden]{display:none!important}
 .daily-dialog{width:min(1040px,100%);max-height:min(92vh,980px);overflow:auto;background:linear-gradient(145deg,#1c1522,#100d14 80%);border:1px solid var(--gold-line);border-radius:20px;padding:clamp(16px,3vw,30px);box-shadow:var(--shadow-3);position:relative}
 .daily-topline{height:4px;width:100%;background:linear-gradient(90deg,#49324f,var(--gold-deep),#6b3e29);border-radius:99px;margin-bottom:20px}
 .daily-eyebrow{text-transform:uppercase;letter-spacing:.17em;color:var(--gold-soft);font-size:.78rem;font-weight:800}
@@ -195,7 +200,9 @@ textarea{min-height:130px;resize:vertical}
 .add-course-panel{margin:4px 0 10px}
 .mode-note-btn{background:none;border:1px solid var(--violet-soft);border-radius:10px;color:#bbaec1;padding:10px 16px;cursor:pointer;font:inherit}
 .mode-note-btn:hover,.mode-note-btn:focus-visible{border-color:var(--gold-bright);color:#e1bd78}
-.mode-flag{font-size:2rem;margin-bottom:12px}
+.mode-flag{display:block;width:52px;height:38px;border-radius:8px;overflow:hidden;margin-bottom:14px;box-shadow:0 3px 10px #0007,0 0 0 1px rgba(255,255,255,.1) inset;transition:transform .18s}
+.mode-flag svg{display:block;width:100%;height:100%}
+.mode-choice:hover .mode-flag,.mode-choice:focus-visible .mode-flag{transform:scale(1.06)}
 .mode-choice-title{font-size:1.25rem;font-weight:750;color:#e1bd78}
 .mode-choice-desc{margin-top:8px;color:var(--lav-muted);line-height:1.55}
 .mode-choice-cta{display:flex;justify-content:space-between;gap:14px;align-items:center;width:100%;margin-top:auto;padding-top:18px;color:#e6bc6b;font-weight:700}
@@ -1221,6 +1228,17 @@ renderDailyGate();
   // crescere senza dover toccare il resto del selettore. Una volta aggiunto, un corso compare
   // come casella a pieno titolo, accanto a inglese e tedesco, e viene ricordato tra una sessione e l'altra.
   const ADDABLE_COURSES=[{mode:'es',flag:'🇪🇸',title:'Italiano ↔ Spagnolo',desc:'Genere e articoli, coniugatore, verbi irregolari, passiva e dialoghi in spagnolo.'}];
+  // Bandierine disegnate in SVG invece di affidarsi all'emoji di sistema: su diversi dispositivi
+  // (Windows senza font a colori aggiornato, alcuni browser/webview) un'emoji-bandiera come 🇩🇪/🇪🇸
+  // non viene composta in un'immagine e ricade sul testo delle due lettere ("DE", "ES"), poco elegante
+  // e, nella pratica, il difetto segnalato dall'utente. Un piccolo SVG inline è invece identico ovunque.
+  const FLAG_SVG={
+    en:`<svg viewBox="0 0 28 20" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bandiera britannica"><rect width="28" height="20" fill="#012169"/><line x1="0" y1="0" x2="28" y2="20" stroke="#fff" stroke-width="4.4"/><line x1="28" y1="0" x2="0" y2="20" stroke="#fff" stroke-width="4.4"/><line x1="0" y1="0" x2="28" y2="20" stroke="#C8102E" stroke-width="1.6"/><line x1="28" y1="0" x2="0" y2="20" stroke="#C8102E" stroke-width="1.6"/><rect x="11.2" width="5.6" height="20" fill="#fff"/><rect y="7.2" width="28" height="5.6" fill="#fff"/><rect x="12.4" width="3.2" height="20" fill="#C8102E"/><rect y="8.4" width="28" height="3.2" fill="#C8102E"/></svg>`,
+    de:`<svg viewBox="0 0 28 20" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bandiera tedesca"><rect width="28" height="20" fill="#FFCE00"/><rect width="28" height="13.3" fill="#DD0000"/><rect width="28" height="6.7" fill="#000"/></svg>`,
+    es:`<svg viewBox="0 0 28 20" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bandiera spagnola"><rect width="28" height="20" fill="#C60B1E"/><rect y="5" width="28" height="10" fill="#FFC400"/></svg>`,
+    add:`<svg viewBox="0 0 28 20" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aggiungi corso"><rect width="28" height="20" fill="#241c2c"/><rect x="0.6" y="0.6" width="26.8" height="18.8" fill="none" stroke="#8a6534" stroke-width="1" stroke-dasharray="3 2"/><line x1="14" y1="5" x2="14" y2="15" stroke="#e0ba75" stroke-width="2.4" stroke-linecap="round"/><line x1="9" y1="10" x2="19" y2="10" stroke="#e0ba75" stroke-width="2.4" stroke-linecap="round"/></svg>`
+  };
+  function flagIconSVG(mode){return FLAG_SVG[mode]||null;}
   function unlockedModes(){const arr=studyState&&studyState.settings&&Array.isArray(studyState.settings.unlockedModes)?studyState.settings.unlockedModes:[];return arr.filter(m=>conf[m]);}
   function visibleModeTiles(){return ['en','de',...unlockedModes()];}
   function modeChoiceDesc(mode){
@@ -1231,7 +1249,7 @@ renderDailyGate();
   }
   function modeChoiceHTML(mode){
     const c=conf[mode];
-    return `<button class="mode-choice" type="button" data-mode="${mode}"><span class="mode-flag">${c.flag}</span><span class="mode-choice-title">${c.pair}</span><span class="mode-choice-desc">${modeChoiceDesc(mode)}</span><span class="mode-choice-cta">Scegli ${c.primaryLabel} <b>→</b></span></button>`;
+    return `<button class="mode-choice" type="button" data-mode="${mode}"><span class="mode-flag">${flagIconSVG(mode)||escapeHTML(c.flag||'🌐')}</span><span class="mode-choice-title">${c.pair}</span><span class="mode-choice-desc">${modeChoiceDesc(mode)}</span><span class="mode-choice-cta">Scegli ${c.primaryLabel} <b>→</b></span></button>`;
   }
   function renderModeChoicesGrid(){
     const grid=$('#modeChoices'); if(!grid)return;
@@ -1239,10 +1257,10 @@ renderDailyGate();
     grid.innerHTML=visible.map(modeChoiceHTML).join('');
     const remaining=ADDABLE_COURSES.filter(cc=>!visible.includes(cc.mode));
     if(remaining.length){
-      grid.insertAdjacentHTML('beforeend',`<button class="mode-choice mode-choice-add" type="button" data-add-course="1"><span class="mode-flag">➕</span><span class="mode-choice-title">Aggiungi corso</span><span class="mode-choice-desc">Attiva un altro percorso in base alla tua lingua: per ora, lo spagnolo.</span><span class="mode-choice-cta">Scopri di più <b>→</b></span></button>`);
+      grid.insertAdjacentHTML('beforeend',`<button class="mode-choice mode-choice-add" type="button" data-add-course="1"><span class="mode-flag">${flagIconSVG('add')}</span><span class="mode-choice-title">Aggiungi corso</span><span class="mode-choice-desc">Attiva un altro percorso in base alla tua lingua: per ora, lo spagnolo.</span><span class="mode-choice-cta">Scopri di più <b>→</b></span></button>`);
     }
     const list=$('#addCourseList');
-    if(list)list.innerHTML=remaining.length?remaining.map(cc=>`<button class="mode-choice" type="button" data-mode="${cc.mode}"><span class="mode-flag">${cc.flag}</span><span class="mode-choice-title">${cc.title}</span><span class="mode-choice-desc">${cc.desc}</span><span class="mode-choice-cta">Aggiungi ${conf[cc.mode].primaryLabel} <b>→</b></span></button>`).join(''):'<p class="mode-note">Hai già aggiunto tutti i corsi disponibili per il momento.</p>';
+    if(list)list.innerHTML=remaining.length?remaining.map(cc=>`<button class="mode-choice" type="button" data-mode="${cc.mode}"><span class="mode-flag">${flagIconSVG(cc.mode)||escapeHTML(cc.flag||'🌐')}</span><span class="mode-choice-title">${cc.title}</span><span class="mode-choice-desc">${cc.desc}</span><span class="mode-choice-cta">Aggiungi ${conf[cc.mode].primaryLabel} <b>→</b></span></button>`).join(''):'<p class="mode-note">Hai già aggiunto tutti i corsi disponibili per il momento.</p>';
   }
   function ensureModePicker(){
     const old=$('#dailyGate');
