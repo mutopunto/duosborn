@@ -2157,7 +2157,7 @@ renderDailyGate();
   function addDaysKey(key,days){const [y,m,d]=key.split('-').map(Number),date=new Date(y,m-1,d);date.setDate(date.getDate()+days);return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-')}
   function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
   function buildQuizChoices(correct, allWords, reverse=false){
-    const label=w=>String(w&&(reverse?pathWord(w):w[3])||'').normalize('NFC').toLocaleLowerCase(currentMode==='de'?'de-DE':'it-IT').replace(/\s+/g,' ').trim();
+    const label=w=>String(w&&(reverse?pathWord(w):w[3])||'').normalize('NFC').toLocaleLowerCase(MODE_LOCALE[currentMode]||'it-IT').replace(/\s+/g,' ').trim();
     const correctKey=wordKey(correct), seen=new Set([label(correct)]), chosen=[correct];
     if(!Array.isArray(allWords)||!allWords.length)return chosen;
     const {choiceCount,sameCategoryDistractors}=difficultySettings();
@@ -2209,7 +2209,7 @@ renderDailyGate();
    const q=norm($('#categoryCoverageSearch')?.value||'');
    const rows=[...totals.entries()].map(([cat,v])=>({cat,pct:v.total?Math.round(v.studied/v.total*100):0,studied:v.studied,total:v.total}))
     .filter(r=>!q||norm(categoryDisplay(r.cat)).includes(q))
-    .sort((a,b)=>b.pct-a.pct||categoryDisplay(a.cat).localeCompare(categoryDisplay(b.cat),currentMode==='de'?'de':'it'));
+    .sort((a,b)=>b.pct-a.pct||categoryDisplay(a.cat).localeCompare(categoryDisplay(b.cat),(MODE_LOCALE[currentMode]||'it-IT').split('-')[0]));
    list.innerHTML=rows.map(r=>`<div class="coverage-row"><div class="coverage-row-top"><span>${esc(categoryDisplay(r.cat))}</span><span class="coverage-pct">${r.pct}%</span></div><div class="progressbar"><span style="width:${r.pct}%"></span></div><small class="study-muted">${r.studied}/${r.total} parole con almeno un tentativo</small></div>`).join('')||'<p class="study-muted">Nessuna categoria trovata.</p>';
   }
   // La copertura per categoria ricalcola tutto il vocabolario (migliaia di parole) e
@@ -2284,7 +2284,7 @@ renderDailyGate();
       const item=categoryStats.get(w[0])||{correct:0,wrong:0,attempts:0};item.correct+=Number(r.correct)||0;item.wrong+=Number(r.wrong)||0;item.attempts+=attempts;categoryStats.set(w[0],item);
     }
     const weak=[...categoryStats.entries()].filter(([,v])=>v.attempts>=2).sort((a,b)=>(b[1].wrong/b[1].attempts)-(a[1].wrong/a[1].attempts)||b[1].attempts-a[1].attempts)[0];
-    const weakHint=$('#homeWeakCategoryHint');if(weakHint)weakHint.textContent=weak?`${weak[0]} · ${Math.round((weak[1].correct/weak[1].attempts)*100)}% di risposte corrette su ${weak[1].attempts} tentativi.`:'Servono almeno 2 risposte nella stessa categoria per suggerire dove allenarti.';
+    const weakHint=$('#homeWeakCategoryHint');if(weakHint)weakHint.textContent=weak?`${categoryDisplay(weak[0])} · ${Math.round((weak[1].correct/weak[1].attempts)*100)}% di risposte corrette su ${weak[1].attempts} tentativi.`:'Servono almeno 2 risposte nella stessa categoria per suggerire dove allenarti.';
     const weakBtn=$('#goWeakCategory');if(weakBtn){weakBtn.disabled=!weak;weakBtn.dataset.weakCategory=weak?weak[0]:'';}
     const bars=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const key=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');bars.push({key,label:new Intl.DateTimeFormat('it-IT',{weekday:'short'}).format(d).replace('.',''),value:Number(daily[key])||0})}
     const max=Math.max(5,...bars.map(x=>x.value));$('#homeWeekBars').innerHTML=bars.map(x=>`<div class="week-day" title="${x.key}: ${x.value} risposte corrette"><b>${x.value}</b><div class="week-bar-track"><div class="week-bar" style="height:${Math.max(3,Math.round(x.value/max*100))}%"></div></div><small>${esc(x.label)}</small></div>`).join('');
@@ -2322,7 +2322,7 @@ renderDailyGate();
     $('#quizModeHint').textContent=quizAnswerMode==='typed'?'Scrivi la risposta senza guardare il vocabolario. Puoi usare una delle traduzioni separate da “/” o “;”.':'Le opzioni mostrano '+(quizDirection==='it-foreign'?'la parola nella lingua che stai studiando.':'la traduzione italiana.')+' Le opzioni duplicate vengono escluse.';
     if(quizAnswerMode==='typed')setTimeout(()=>typedInput.focus({preventScroll:true}),0);
   }
-  function normaliseQuizAnswer(value){return String(value||'').toLocaleLowerCase(currentMode==='de'?'de-DE':'it-IT').normalize('NFC').replace(/[’‘]/g,"'").replace(/[.!?¡¿,;:]+$/g,'').replace(/\s+/g,' ').trim()}
+  function normaliseQuizAnswer(value){return String(value||'').toLocaleLowerCase(MODE_LOCALE[currentMode]||'it-IT').normalize('NFC').replace(/[’‘]/g,"'").replace(/[.!?¡¿,;:]+$/g,'').replace(/\s+/g,' ').trim()}
   // Piccola distanza di edit (Levenshtein) per tollerare errori di battitura minimi senza
   // accettare risposte sbagliate: la soglia è proporzionale alla lunghezza della parola.
   function levenshteinDistance(a,b){
