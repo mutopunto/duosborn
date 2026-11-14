@@ -48,6 +48,10 @@ h1{margin:0;font-size:clamp(1.3rem,2.6vw,1.7rem);color:var(--gold);text-shadow:0
 header p{margin:0;color:var(--lav);font-size:.92rem;max-width:56ch}
 .path-switch{align-self:flex-start;margin-top:4px;background:var(--ink-soft)!important;border:1px solid var(--violet-soft)!important;color:var(--gold-focus)!important;padding:10px 16px;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap}
 .path-switch:hover{border-color:var(--gold-bright)!important}
+#swUpdateBanner{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:100000;display:flex;align-items:center;gap:12px;background:var(--ink-soft);border:1px solid var(--gold-line);border-radius:var(--r-md);padding:12px 16px;box-shadow:var(--shadow-2);max-width:92vw;flex-wrap:wrap}
+#swUpdateBanner span{color:var(--lav)}
+#swUpdateReload{background:var(--gold-deep)!important;color:#100c10!important;border-color:var(--gold-line)!important;font-weight:700}
+#swUpdateDismiss{padding:6px 10px!important;min-width:0}
 
 /* ---------- Navigazione: barra laterale fissa da tablet in su ---------- */
 main{max-width:1180px;margin:0 auto;padding:28px clamp(14px,3vw,26px) 70px}
@@ -586,7 +590,7 @@ footer{text-align:center;color:#a698ad;padding:22px;font-size:.9rem;border-top:1
  <div class="panel"><h2>🎙️ Allenatore di pronuncia</h2><p class="muted">Ascolta il modello, ripeti al microfono e guarda il testo riconosciuto. Il confronto misura la somiglianza tra testo atteso e trascritto: non è un'analisi fonetica professionale e non certifica la pronuncia.</p>
   <div class="step-flow">
    <article class="study-card"><h3>1. Scegli la parola o la frase</h3><label for="pronounceInput">Testo da pronunciare</label><input class="study-input" id="pronounceInput" maxlength="300" placeholder="Es. I would like a cup of coffee."><div class="study-actions"><button class="primary" id="loadPronounceTarget" type="button">Usa questo testo</button><button id="randomPronounceTarget" type="button">🎲 Parola casuale</button></div><p class="study-muted">Puoi usare una parola del vocabolario: premi «🎙️ Pronuncia» nella sua scheda.</p></article>
-   <article class="study-card"><h3>2. Ascolta e ripeti</h3><div class="resultbox" id="pronounceTarget" aria-live="polite">Hello!</div><div class="quiz-settings" style="max-width:460px;margin:10px 0"><div><label for="pronunciationVoice">Voce</label><select id="pronunciationVoice" class="study-input"><option value="">🤖 Scelta automatica (consigliata)</option></select></div><div><label for="pronunciationSpeed">Velocità audio</label><select id="pronunciationSpeed" class="study-input"><option value="0.65">Molto lenta</option><option value="0.8">Lenta</option><option value="0.9" selected>Normale</option><option value="1">Naturale</option></select></div></div><div class="study-actions"><button class="primary" id="playPronunciation" type="button">🔊 Ascolta modello</button><button class="primary" id="startPronunciation" type="button">🎙️ Parla</button><button id="stopPronunciation" type="button" disabled>■ Interrompi</button></div><p class="study-muted" id="voiceStatus" role="status" aria-live="polite">Il supporto del microfono verrà verificato dal browser.</p></article>
+   <article class="study-card"><h3>2. Ascolta e ripeti</h3><div class="resultbox" id="pronounceTarget" aria-live="polite">Hello!</div><div class="quiz-settings" style="max-width:460px;margin:10px 0"><div><label for="pronunciationVoice">Voce</label><select id="pronunciationVoice" class="study-input"><option value="">🤖 Scelta automatica (consigliata)</option></select></div><div><label for="pronunciationSpeed">Velocità audio</label><select id="pronunciationSpeed" class="study-input"><option value="0.65">Molto lenta</option><option value="0.8">Lenta</option><option value="0.9" selected>Normale</option><option value="1">Naturale</option></select></div></div><div class="study-actions"><button class="primary" id="playPronunciation" type="button">🔊 Ascolta modello</button><button class="primary" id="startPronunciation" type="button">🎙️ Parla</button><button id="stopPronunciation" type="button" disabled>■ Interrompi</button></div><p class="study-muted voice-status-text" id="voiceStatus" role="status" aria-live="polite">Il supporto del microfono verrà verificato dal browser.</p></article>
   </div>
   <article class="study-card" style="margin-top:12px"><h3>3. Risultato</h3><p><b>Il browser ha riconosciuto:</b></p><div id="pronounceTranscript" class="resultbox" aria-live="polite">Ancora nessun tentativo.</div><div id="pronunciationFeedback" class="study-answer" hidden aria-live="polite"></div><p class="study-muted">Il riconoscimento vocale può elaborare la voce tramite un servizio del browser e richiedere Internet. Questa pagina non registra né conserva file audio; il testo riconosciuto rimane solo nella sessione finché non chiudi o cambi schermata.</p></article>
  </div>
@@ -633,6 +637,10 @@ footer{text-align:center;color:#a698ad;padding:22px;font-size:.9rem;border-top:1
  <div class="panel">
   <h2>🔊 Audio</h2>
   <p class="muted">Nessun sito web, questa app compresa, può scegliere al posto tuo quale microfono o altoparlante del telefono/PC usare: è una scelta che i browser riservano solo alle impostazioni di sistema. Per cambiare microfono o altoparlante usato dall'app, cambia quello predefinito nelle impostazioni audio del telefono/PC: l'app lo segue automaticamente, senza bisogno di nessuna impostazione qui dentro.</p>
+  <p class="muted">Quello che puoi scegliere è <b>quale voce</b> usa l'app per leggere parole, frasi ed esempi ad alta voce, tra quelle già installate sul tuo browser o dispositivo: 🌐 indica una voce online (di solito più naturale, ma richiede una connessione), 💻 una voce locale (funziona anche offline). Ascolta un esempio prima di scegliere. Se il menu qui sotto resta vuoto, il browser potrebbe non aver ancora comunicato le sue voci: riprova dopo qualche secondo, oppure apri l'app con Chrome o Edge aggiornati.</p>
+  <label for="settingsVoice">Voce per il percorso attivo</label><select id="settingsVoice" class="study-input"><option value="">🤖 Scelta automatica (consigliata)</option></select>
+  <div class="study-actions"><button type="button" id="previewSettingsVoice">🔊 Ascolta un esempio</button></div>
+  <p class="study-muted voice-status-text" id="settingsVoiceStatus" role="status" aria-live="polite"></p>
  </div>
  <div class="panel">
   <h2>📚 Categorie attive</h2>
@@ -1456,7 +1464,7 @@ renderDailyGate();
   function drawCategories(){
     $$('.categories > .catbtn').forEach(el=>el.remove());
     const names=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))]
-      .sort((a,b)=>categoryDisplay(a).localeCompare(categoryDisplay(b),currentMode==='de'?'de':'it'));
+      .sort((a,b)=>categoryDisplay(a).localeCompare(categoryDisplay(b),currentMode==='de'?'de':currentMode==='es'?'es':'it'));
     const q=norm($('#categorySearch')?.value||'');
     const visibleNames=names.filter(c=>!q||norm(categoryDisplay(c)).includes(q));
     const allActive=selectedCategory==='all'?' active':'';
@@ -1506,7 +1514,7 @@ renderDailyGate();
   function renderSettingsCategories(){
     const list=$('#settingsCategoryList');if(!list)return;
     const names=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))]
-      .sort((a,b)=>categoryDisplay(a).localeCompare(categoryDisplay(b),currentMode==='de'?'de':'it'));
+      .sort((a,b)=>categoryDisplay(a).localeCompare(categoryDisplay(b),currentMode==='de'?'de':currentMode==='es'?'es':'it'));
     const q=norm($('#settingsCategorySearch')?.value||'');
     const visible=names.filter(c=>!q||norm(categoryDisplay(c)).includes(q));
     const excluded=excludedCategorySet();
@@ -1533,11 +1541,35 @@ renderDailyGate();
     }));
   }
   $('#settingsCategorySearch')?.addEventListener('input',debounce(()=>renderSettingsCategories(),200));
-  $('#settingsCategoryAllOn')?.addEventListener('click',()=>{studyState.settings.excludedCategories=[];persist();renderSettingsCategories();renderStudyStats();});
+  function settingsVisibleCategoryNames(){
+    const names=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))]
+      .sort((a,b)=>categoryDisplay(a).localeCompare(categoryDisplay(b),currentMode==='de'?'de':currentMode==='es'?'es':'it'));
+    const q=norm($('#settingsCategorySearch')?.value||'');
+    return q?names.filter(c=>norm(categoryDisplay(c)).includes(q)):names;
+  }
+  // "Attiva/Disattiva tutte" agiscono solo sulle categorie attualmente visibili (cioè quelle
+  // che superano il filtro di ricerca): altrimenti, cercando una categoria specifica, questi
+  // pulsanti finirebbero per attivare/disattivare anche categorie che l'utente non sta
+  // nemmeno guardando in quel momento.
+  $('#settingsCategoryAllOn')?.addEventListener('click',()=>{
+    const visible=settingsVisibleCategoryNames();
+    studyState.settings.excludedCategories=[...excludedCategorySet()].filter(c=>!visible.includes(c));
+    persist();renderSettingsCategories();renderStudyStats();
+  });
   $('#settingsCategoryAllOff')?.addEventListener('click',()=>{
-    const names=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))];
-    if(!confirm('Vuoi disattivare tutte le categorie tranne la prima? Deve restarne attiva almeno una, altrimenti il quiz non avrebbe più parole da proporti.'))return;
-    studyState.settings.excludedCategories=names.slice(1);persist();renderSettingsCategories();renderStudyStats();
+    const allNames=[...new Set(WORDS.map(w=>w[0]).filter(w=>w!=='🌐 Tutte'))];
+    const visible=settingsVisibleCategoryNames();
+    const isFiltered=visible.length<allNames.length;
+    const excludedBefore=excludedCategorySet();
+    const activeOutsideFilter=allNames.filter(c=>!visible.includes(c)&&!excludedBefore.has(c));
+    let toExclude=visible,msg=isFiltered?`Vuoi disattivare le ${visible.length} categorie corrispondenti al filtro attuale? Le altre categorie restano invariate.`:'Vuoi disattivare tutte le categorie tranne la prima? Deve restarne attiva almeno una, altrimenti il quiz non avrebbe più parole da proporti.';
+    if(activeOutsideFilter.length===0){
+      if(visible.length<=1){alert('Deve restare attiva almeno una categoria, altrimenti le parole del giorno e il quiz non avrebbero più vocaboli da proporti.');return;}
+      toExclude=visible.slice(1);
+      msg=isFiltered?'Vuoi disattivare le categorie corrispondenti al filtro attuale, tranne la prima? Deve restare attiva almeno una categoria in totale.':'Vuoi disattivare tutte le categorie tranne la prima? Deve restarne attiva almeno una, altrimenti il quiz non avrebbe più parole da proporti.';
+    }
+    if(!confirm(msg))return;
+    studyState.settings.excludedCategories=[...new Set([...excludedBefore,...toExclude])];persist();renderSettingsCategories();renderStudyStats();
   });
   function renderSettingsAppInfo(){
     const info=$('#settingsAppInfo');if(!info)return;
@@ -1548,10 +1580,10 @@ renderDailyGate();
   $('#settingsImportShortcut')?.addEventListener('click',()=>{$('#importDataButton')?.click();});
   $('#settingsResetDefaults')?.addEventListener('click',()=>{
     if(!confirm('Vuoi ripristinare difficoltà, stile visivo e categorie attive ai valori predefiniti? I progressi e le parole salvate non verranno toccati.'))return;
-    studyState.settings={excludedCategories:[],difficulty:'normale',theme:'default'};
+    studyState.settings={excludedCategories:[],difficulty:'normale',theme:'default',voiceByLang:(studyState.settings.voiceByLang&&typeof studyState.settings.voiceByLang==='object')?studyState.settings.voiceByLang:{},unlockedModes:Array.isArray(studyState.settings.unlockedModes)?studyState.settings.unlockedModes:[]};
     persist();applyTheme();renderSettingsTab();renderStudyStats();renderHomeDashboard();
   });
-  function renderSettingsTab(){renderSettingsDifficulty();renderSettingsTheme();renderSettingsCategories();renderSettingsAppInfo();}
+  function renderSettingsTab(){renderSettingsDifficulty();renderSettingsTheme();renderSettingsCategories();renderSettingsAppInfo();populateAllVoiceSelects();}
   const COMMON_WORD_FORMS={
     apple:['apples','die Äpfel'], banana:['bananas','die Bananen'], orange:['oranges','die Orangen'], strawberry:['strawberries','die Erdbeeren'], grape:['grapes','die Trauben'], lemon:['lemons','die Zitronen'], pear:['pears','die Birnen'], peach:['peaches','die Pfirsiche'], watermelon:['watermelons','die Wassermelonen'], carrot:['carrots','die Karotten'], potato:['potatoes','die Kartoffeln'], tomato:['tomatoes','die Tomaten'], onion:['onions','die Zwiebeln'], garlic:['cloves of garlic','die Knoblauchzehen'], cucumber:['cucumbers','die Gurken'], spinach:['usually uncountable','meist ohne Plural'], broccoli:['usually uncountable','meist ohne Plural'], egg:['eggs','die Eier'], milk:['usually uncountable','meist ohne Plural'], cheese:['cheeses (varieties)','Käsesorten'], butter:['usually uncountable','meist ohne Plural'], bread:['usually uncountable; loaves of bread','die Brote'], rice:['usually uncountable','meist ohne Plural'], pasta:['usually uncountable','die Nudeln'], fish:['fish; fishes for species','die Fische'], chicken:['chickens (animals); chicken (food)','die Hähnchen'], bean:['beans','die Bohnen'], lentil:['lentils','die Linsen'], chickpea:['chickpeas','die Kichererbsen'], soup:['soups','die Suppen'], salad:['salads','die Salate'], sandwich:['sandwiches','die Sandwiches'], plate:['plates','die Teller'], fork:['forks','die Gabeln'], knife:['knives','die Messer'], spoon:['spoons','die Löffel'], cup:['cups','die Tassen'], bottle:['bottles','die Flaschen'], book:['books','die Bücher'], child:['children','die Kinder'], person:['people','die Personen'], man:['men','die Männer'], woman:['women','die Frauen'], foot:['feet','die Füße'], tooth:['teeth','die Zähne'], mouse:['mice','die Mäuse'], cat:['cats','die Katzen'], dog:['dogs','die Hunde'], bird:['birds','die Vögel'], horse:['horses','die Pferde'], house:['houses','die Häuser'], room:['rooms','die Zimmer'], window:['windows','die Fenster'], door:['doors','die Türen'], chair:['chairs','die Stühle'], table:['tables','die Tische'], bed:['beds','die Betten'], shoe:['shoes','die Schuhe'], sock:['socks','die Socken'], shirt:['shirts','die Hemden'], dress:['dresses','die Kleider'], toothbrush:['toothbrushes','die Zahnbürsten'], 'coffee table':['coffee tables','die Couchtische']
   };
@@ -1565,7 +1597,8 @@ renderDailyGate();
     const nounContext=/frutta|verdura|ortaggi|cibo|alimenti|carne|salum|pesce|pane|cereali|farine|latticini|uova|legumi|dolci|dessert|bevande|pasti|ristorante|spezie|condimenti|salse|cucina|casa|arred|famiglia|animali|corpo|abbigliamento|trasporti|città|scuola|profession|stoviglie|utensili|stanze|mobili|oggetti|strumenti/i.test(category);
     if(noun&&nounContext&&currentMode==='en')notes.push(`Plurale: ${noun[0]}`);
     else if(noun&&nounContext&&currentMode==='de')notes.push(`Articolo: ${noun[1]} · Singolare: ${noun[2]} · Plurale: ${noun[3]}`);
-    else if(forms&&nounContext)notes.push(currentMode==='en'?`Plurale EN: ${forms[0]}`:`Forma plurale DE: ${forms[1]}`);
+    else if(forms&&nounContext&&currentMode==='en')notes.push(`Plurale EN: ${forms[0]}`);
+    else if(forms&&nounContext&&currentMode==='de')notes.push(`Forma plurale DE: ${forms[1]}`);
     if(currentMode==='en' && /verbi|phrasal/i.test(category)){
       const base=String(w[1]||'').toLocaleLowerCase('en-US').replace(/^to\s+/,'').trim();
       const row=IRREGULAR.find(r=>r[0].toLocaleLowerCase('en-US')===base);
@@ -1864,7 +1897,16 @@ renderDailyGate();
     visitar:{it:'visitare',pres:['visito','visitas','visita','visitamos','visitáis','visitan'],pret:['visité','visitaste','visitó','visitamos','visitasteis','visitaron'],pp:'visitado'},
     examinar:{it:'esaminare',pres:['examino','examinas','examina','examinamos','examináis','examinan'],pret:['examiné','examinaste','examinó','examinamos','examinasteis','examinaron'],pp:'examinado'},
     firmar:{it:'firmare',pres:['firmo','firmas','firma','firmamos','firmáis','firman'],pret:['firmé','firmaste','firmó','firmamos','firmasteis','firmaron'],pp:'firmado'},
-    revisar:{it:'controllare',pres:['reviso','revisas','revisa','revisamos','revisáis','revisan'],pret:['revisé','revisaste','revisó','revisamos','revisasteis','revisaron'],pp:'revisado'}
+    revisar:{it:'controllare',pres:['reviso','revisas','revisa','revisamos','revisáis','revisan'],pret:['revisé','revisaste','revisó','revisamos','revisasteis','revisaron'],pp:'revisado'},
+    // reír/sonreír/freír: la 3ª persona singolare del pretérito ("rio"/"sonrio"/"frio") si scrive
+    // SENZA accento per la Real Academia Española (Ortografía 2010): la sequenza "io" conta come
+    // dittongo ai fini dell'accentazione grafica, quindi la forma è monosillaba e non si accenta,
+    // anche se molti la scrivono ancora per abitudine con l'accento ("rió"/"frió"/"sonrió").
+    // Fonti: RAE, Diccionario panhispánico de dudas, voci «tilde» e «freír» (quest'ultima dice
+    // esplicitamente che freír si coniuga come sonreír).
+    reír:{it:'ridere',pres:['río','ríes','ríe','reímos','reís','ríen'],pret:['reí','reíste','rio','reímos','reísteis','rieron'],pp:'reído'},
+    sonreír:{it:'sorridere',pres:['sonrío','sonríes','sonríe','sonreímos','sonreís','sonríen'],pret:['sonreí','sonreíste','sonrio','sonreímos','sonreísteis','sonrieron'],pp:'sonreído'},
+    freír:{it:'friggere',pres:['frío','fríes','fríe','freímos','freís','fríen'],pret:['freí','freíste','frio','freímos','freísteis','frieron'],pp:'frito'}
   };
   const ES_FUT_END=['é','ás','á','emos','éis','án'];
   const ES_IT_ALIASES = Object.fromEntries(Object.entries(ES_VERBS).map(([v,d])=>[norm(d.it),v]));
@@ -2029,7 +2071,8 @@ renderDailyGate();
   // genericExampleES genera una frase sicura e pertinente alla categoria.
   const spanishCore={
     apple:['Como una manzana en el descanso.','Mangio una mela durante la pausa.'],banana:['Llevo un plátano como merienda.','Porto una banana come spuntino.'],orange:['Pelo una naranja después de comer.','Sbuccio un’arancia dopo pranzo.'],strawberry:['Estas fresas están muy dulces.','Queste fragole sono molto dolci.'],carrot:['Rallo una zanahoria para la ensalada.','Grattugio una carota per l’insalata.'],potato:['Horneo las patatas hasta que están blandas.','Cuoci le patate al forno finché diventano morbide.'],tomato:['Corto el tomate y lo añado a la ensalada.','Taglia il pomodoro e aggiungilo all’insalata.'],onion:['Sofrío la cebolla en un poco de aceite.','Soffriggi la cipolla in poco olio.'],garlic:['Añado un diente de ajo a la salsa.','Aggiungi uno spicchio d’aglio al sugo.'],cucumber:['Corto el pepino en rodajas para la ensalada.','Taglia il cetriolo a fette per l’insalata.'],egg:['Hiervo el huevo durante ocho minutos.','Fai bollire l’uovo per otto minuti.'],milk:['Bebo un vaso de leche por la mañana.','Bevo un bicchiere di latte la mattina.'],cheese:['¿Quieres queso con el pan?','Vuoi del formaggio con il pane?'],bread:['¿Puedes comprar una barra de pan?','Potresti comprare una pagnotta di pane?'],rice:['Lavo el arroz antes de cocinarlo.','Sciacqua il riso prima di cuocerlo.'],pasta:['La pasta necesita dos minutos más.','La pasta ha bisogno di altri due minuti.'],fish:['Esta noche comemos pescado a la parrilla.','Stasera mangiamo pesce alla griglia.'],chicken:['El pollo se está haciendo en el horno.','Il pollo sta cuocendo nel forno.'],soup:['La sopa está caliente; déjala enfriar un poco.','La zuppa è calda; lasciala raffreddare un po’.'],salad:['Preparo una ensalada fresca para comer.','Preparo un’insalata fresca per pranzo.'],plate:['Pongo el plato limpio en la mesa.','Metti il piatto pulito sul tavolo.'],fork:['¿Me puedes dar un tenedor, por favor?','Potresti darmi una forchetta, per favore?'],knife:['Uso un cuchillo afilado para cortar el pan.','Usa un coltello affilato per tagliare il pane.'],spoon:['Remuevo la sopa con una cuchara.','Mescola la zuppa con un cucchiaio.'],bottle:['Pongo la botella de agua en la nevera.','Metti la bottiglia d’acqua in frigorifero.'],
-    house:['Nuestra casa tiene un jardín pequeño.','La nostra casa ha un piccolo giardino.'],home:['Normalmente llego a casa a las seis.','Di solito torno a casa alle sei.'],room:['Tu habitación está al lado de la mía.','La tua stanza è accanto alla mia.'],kitchen:['La cocina está limpia después de cenar.','La cucina è pulita dopo cena.'],bathroom:['El baño está al final del pasillo.','Il bagno è in fondo al corridoio.'],bedroom:['Leo en mi habitación antes de dormir.','Leggo nella mia camera da letto prima di dormire.'],window:['Cierra la ventana, por favor; hace frío.','Per favore, chiudi la finestra; fa freddo.'],door:['Alguien está llamando a la puerta.','Qualcuno sta bussando alla porta.'],chair:['Trae una silla más, por favor.','Per favore, porta un’altra sedia.'],table:['La cena está en la mesa.','La cena è sul tavolo.'],bed:['Hago la cama todas las mañanas.','Rifaccio il letto ogni mattina.'],family:['Mi familia cena junta los domingos.','La mia famiglia cena insieme la domenica.'],mother:['Mi madre me llama todas las noches.','Mia madre mi chiama ogni sera.'],father:['Mi padre trabaja cerca de la estación.','Mio padre lavora vicino alla stazione.'],sister:['Mi hermana es dos años menor que yo.','Mia sorella ha due anni meno di me.'],brother:['Mi hermano está aprendiendo español.','Mio fratello sta imparando lo spagnolo.'],friend:['Esta noche viene un amigo a casa.','Stasera viene a trovarmi un amico.'],dog:['El perro duerme debajo de la mesa.','Il cane dorme sotto il tavolo.'],cat:['El gato está sentado junto a la ventana.','Il gatto è seduto vicino alla finestra.'],water:['¿Me pones un vaso de agua, por favor?','Potrei avere un bicchiere d’acqua, per favore?'],tea:['¿Te apetece una taza de té?','Ti va una tazza di tè?'],breakfast:['Normalmente desayuno a las siete.','Di solito faccio colazione alle sette.'],lunch:['Comemos sobre la una.','Pranziamo verso l’una.'],dinner:['Esta noche cenamos con amigos.','Stasera ceniamo con gli amici.'],bus:['Cojo el autobús todas las mañanas.','Ogni mattina prendo l’autobus.'],school:['Los niños van juntos al colegio.','I bambini vanno a scuola insieme.'],teacher:['La profesora explicó el ejercicio dos veces.','L’insegnante ha spiegato l’esercizio due volte.'],student:['El estudiante hizo una buena pregunta.','Lo studente ha fatto una bella domanda.'],car:['Dejé las llaves en el coche.','Ho lasciato le chiavi in macchina.'],train:['El tren llega al andén tres.','Il treno arriva al binario tre.'],street:['En esta calle hay una panadería.','C’è una panetteria in questa strada.'],shop:['La tienda cierra a las ocho.','Il negozio chiude alle otto.'],happy:['Hoy estoy muy feliz.','Oggi sono molto felice.'],careful:['Ten cuidado al cruzar la calle.','Fai attenzione quando attraversi la strada.'],usually:['Normalmente estudio por la noche.','Di solito studio la sera.'],quickly:['Ella termina la tarea rápidamente.','Lei completa il compito rapidamente.'],go:['Voy a la universidad a pie todos los días.','Ogni giorno vado all’università a piedi.'],need:['Todavía necesito algo de tiempo.','Ho bisogno ancora di un po’ di tempo.']
+    house:['Nuestra casa tiene un jardín pequeño.','La nostra casa ha un piccolo giardino.'],home:['Normalmente llego a casa a las seis.','Di solito torno a casa alle sei.'],room:['Tu habitación está al lado de la mía.','La tua stanza è accanto alla mia.'],kitchen:['La cocina está limpia después de cenar.','La cucina è pulita dopo cena.'],bathroom:['El baño está al final del pasillo.','Il bagno è in fondo al corridoio.'],bedroom:['Leo en mi habitación antes de dormir.','Leggo nella mia camera da letto prima di dormire.'],window:['Cierra la ventana, por favor; hace frío.','Per favore, chiudi la finestra; fa freddo.'],door:['Alguien está llamando a la puerta.','Qualcuno sta bussando alla porta.'],chair:['Trae una silla más, por favor.','Per favore, porta un’altra sedia.'],table:['La cena está en la mesa.','La cena è sul tavolo.'],bed:['Hago la cama todas las mañanas.','Rifaccio il letto ogni mattina.'],family:['Mi familia cena junta los domingos.','La mia famiglia cena insieme la domenica.'],mother:['Mi madre me llama todas las noches.','Mia madre mi chiama ogni sera.'],father:['Mi padre trabaja cerca de la estación.','Mio padre lavora vicino alla stazione.'],sister:['Mi hermana es dos años menor que yo.','Mia sorella ha due anni meno di me.'],brother:['Mi hermano está aprendiendo español.','Mio fratello sta imparando lo spagnolo.'],friend:['Esta noche viene un amigo a casa.','Stasera viene a trovarmi un amico.'],dog:['El perro duerme debajo de la mesa.','Il cane dorme sotto il tavolo.'],cat:['El gato está sentado junto a la ventana.','Il gatto è seduto vicino alla finestra.'],water:['¿Me pones un vaso de agua, por favor?','Potrei avere un bicchiere d’acqua, per favore?'],tea:['¿Te apetece una taza de té?','Ti va una tazza di tè?'],breakfast:['Normalmente desayuno a las siete.','Di solito faccio colazione alle sette.'],lunch:['Comemos sobre la una.','Pranziamo verso l’una.'],dinner:['Esta noche cenamos con amigos.','Stasera ceniamo con gli amici.'],bus:['Cojo el autobús todas las mañanas.','Ogni mattina prendo l’autobus.'],school:['Los niños van juntos al colegio.','I bambini vanno a scuola insieme.'],teacher:['La profesora explicó el ejercicio dos veces.','L’insegnante ha spiegato l’esercizio due volte.'],student:['El estudiante hizo una buena pregunta.','Lo studente ha fatto una bella domanda.'],car:['Dejé las llaves en el coche.','Ho lasciato le chiavi in macchina.'],train:['El tren llega al andén tres.','Il treno arriva al binario tre.'],street:['En esta calle hay una panadería.','C’è una panetteria in questa strada.'],shop:['La tienda cierra a las ocho.','Il negozio chiude alle otto.'],happy:['Hoy estoy muy feliz.','Oggi sono molto felice.'],careful:['Ten cuidado al cruzar la calle.','Fai attenzione quando attraversi la strada.'],usually:['Normalmente estudio por la noche.','Di solito studio la sera.'],quickly:['Ella termina la tarea rápidamente.','Lei completa il compito rapidamente.'],go:['Voy a la universidad a pie todos los días.','Ogni giorno vado all’università a piedi.'],need:['Todavía necesito algo de tiempo.','Ho bisogno ancora di un po’ di tempo.'],
+    spinach:['Añado espinacas a la tortilla.','Aggiungo gli spinaci alla frittata.'],broccoli:['Cuece el brócoli al vapor durante cinco minutos.','Cuoci i broccoli al vapore per cinque minuti.'],beans:['Añade las judías a la sopa.','Aggiungi i fagioli alla zuppa.'],key:['No encuentro la llave de casa.','Non riesco a trovare la chiave di casa.'],phone:['La batería de mi teléfono está casi descargada.','La batteria del mio telefono è quasi scarica.'],wallet:['Mi cartera está en el bolso.','Il mio portafoglio è nella borsa.'],bag:['Los libros están en mi bolsa.','I libri sono nella mia borsa.'],bird:['Un pájaro canta en el árbol.','Un uccello canta sull’albero.'],horse:['El caballo está bebiendo agua.','Il cavallo sta bevendo acqua.'],station:['Quedemos delante de la estación.','Incontriamoci davanti alla stazione.'],park:['Damos un paseo por el parque.','Facciamo una passeggiata al parco.'],bench:['Nos sentamos en un banco del parque.','Ci sediamo su una panchina nel parco.'],playground:['Los niños juegan en el parque infantil.','I bambini giocano al parco giochi.'],path:['El sendero lleva al lago.','Il sentiero porta al lago.'],swing:['El niño se columpia en el columpio.','Il bambino si dondola sull’altalena.'],slide:['Los niños esperan el tobogán.','I bambini aspettano lo scivolo.'],lawn:['Por favor, no pises el césped.','Per favore, non calpestare il prato.'],gazebo:['Nos sentamos en el cenador para estar a la sombra.','Ci sediamo nel gazebo per stare all’ombra.'],seesaw:['Dos niños juegan en el balancín.','Due bambini giocano sull’altalena a bilico.'],'picnic table':['Comemos en una mesa de picnic.','Pranziamo a un tavolo da picnic.'],'litter bin':['Por favor, tira el envoltorio a la papelera.','Per favore, butta l’involucro nel cestino.'],'drinking fountain':['Hay una fuente de agua cerca de la entrada.','C’è una fontanella vicino all’ingresso.'],'flower bed':['El arriate está lleno de tulipanes.','L’aiuola è piena di tulipani.'],'skate park':['El skatepark está lleno esta tarde.','Lo skatepark è affollato questo pomeriggio.'],'dog park':['Llevo al perro a la zona para perros.','Porto il cane all’area cani.'],'public garden':['El jardín público cierra al atardecer.','Il giardino pubblico chiude al tramonto.'],'jogging path':['Corro por el sendero de footing todas las mañanas.','Corro lungo il percorso per jogging ogni mattina.'],'picnic area':['La zona de picnic tiene varias mesas.','L’area picnic ha diversi tavoli.'],'public toilet':['¿Dónde está el baño público?','Dov’è il bagno pubblico?'],'park entrance':['Nos encontramos en la entrada del parque.','Ci incontriamo all’ingresso del parco.'],'park bench':['Hemos encontrado un banco a la sombra en el parque.','Abbiamo trovato una panchina all’ombra nel parco.'],'walking trail':['La ruta de senderismo atraviesa el bosque.','Il sentiero escursionistico attraversa il bosco.'],'flower garden':['El jardín de flores atrae a las mariposas.','Il giardino fiorito attira le farfalle.']
   };
   function genericExampleES(w){
     const catLower=String(w[0]||'').toLowerCase();
@@ -2546,8 +2589,9 @@ renderDailyGate();
    const voices=speechSynthesis.getVoices()||[];
    return voices.find(v=>v.voiceURI===uri)||null;
   }
+  function setTTSStatus(text){document.querySelectorAll('.voice-status-text').forEach(el=>el.textContent=text);}
   function playSpeech(text,rate,voiceURIOverride){
-   if(!synthAvailable()){if($('#voiceStatus'))$('#voiceStatus').textContent='Questo browser non supporta la sintesi vocale. Prova con Chrome, Edge o un altro browser aggiornato.';return false}
+   if(!synthAvailable()){setTTSStatus('Questo browser non supporta la sintesi vocale. Prova con Chrome, Edge o un altro browser aggiornato.');return false}
    try{
     speechSynthesis.cancel();
     const myGen=++speechGeneration;
@@ -2560,11 +2604,11 @@ renderDailyGate();
      const u=new SpeechSynthesisUtterance(chunkText);
      u.lang=lang;u.rate=baseRate;u.pitch=1;
      if(voice)u.voice=voice;
-     if(idx===0)u.onstart=()=>{if($('#voiceStatus'))$('#voiceStatus').textContent='Riproduzione in corso · voce '+(voice?voice.name+' ('+voice.lang+')'+(voice.localService===false?' · voce online':' · voce del dispositivo'):lang);};
-     u.onerror=()=>{if($('#voiceStatus'))$('#voiceStatus').textContent='Non è stato possibile riprodurre l’audio. Controlla le voci vocali del sistema.'};
+     if(idx===0)u.onstart=()=>{setTTSStatus('Riproduzione in corso · voce '+(voice?voice.name+' ('+voice.lang+')'+(voice.localService===false?' · voce online':' · voce del dispositivo'):lang));};
+     u.onerror=()=>{setTTSStatus('Non è stato possibile riprodurre l’audio. Controlla le voci vocali del sistema.')};
      u.onend=()=>{
       if(myGen!==speechGeneration)return;
-      if(isLast){if($('#voiceStatus')&&!recognitionActive)$('#voiceStatus').textContent='Audio terminato. Ora prova a ripetere.';return;}
+      if(isLast){if(!recognitionActive)setTTSStatus(activeTab==='pronunciation'?'Audio terminato. Ora prova a ripetere.':'Audio terminato.');return;}
       // Micro-pausa fra un segmento e il successivo: niente di più che il tempo di un respiro.
       setTimeout(()=>speakChunk(idx+1),chunks.length>1?110:0);
      };
@@ -2572,7 +2616,7 @@ renderDailyGate();
     };
     speakChunk(0);
     return true;
-   }catch(err){if($('#voiceStatus'))$('#voiceStatus').textContent='Errore nella sintesi vocale: '+err.message;return false}
+   }catch(err){setTTSStatus('Errore nella sintesi vocale: '+err.message);return false}
   }
   function cleanTargetForSpeech(text){return String(text||'').split('/')[0].replace(/\([^)]*\)/g,'').replace(/\s+/g,' ').trim()}
   function normaliseSpeechText(text){return String(text||'').toLocaleLowerCase(MODE_LOCALE[currentMode]||'en-US').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[’']/g,'').replace(/[^\p{L}\p{N}]+/gu,' ').trim().replace(/\s+/g,' ')}
@@ -2641,9 +2685,12 @@ renderDailyGate();
    sel.innerHTML=fallback+voices.map(v=>`<option value="${esc(v.voiceURI)}">${v.localService===false?'🌐':'💻'} ${esc(v.name)} (${esc(v.lang)})</option>`).join('');
    sel.value=voices.some(v=>v.voiceURI===current)?current:'';
   }
-  function populateAllVoiceSelects(){['dictationVoice','pronunciationVoice'].forEach(populateVoiceSelect);}
+  function populateAllVoiceSelects(){['dictationVoice','pronunciationVoice','settingsVoice'].forEach(populateVoiceSelect);}
   $('#dictationVoice').addEventListener('change',()=>{setPreferredVoice(languageTag(),$('#dictationVoice').value);populateAllVoiceSelects();});
   $('#pronunciationVoice').addEventListener('change',()=>{setPreferredVoice(languageTag(),$('#pronunciationVoice').value);populateAllVoiceSelects();});
+  $('#settingsVoice').addEventListener('change',()=>{setPreferredVoice(languageTag(),$('#settingsVoice').value);populateAllVoiceSelects();});
+  const VOICE_PREVIEW_TEXT={en:'Hello! This is what this voice sounds like.',de:'Hallo! So klingt diese Stimme.',es:'¡Hola! Así suena esta voz.'};
+  $('#previewSettingsVoice').addEventListener('click',()=>{playSpeech(VOICE_PREVIEW_TEXT[currentMode]||VOICE_PREVIEW_TEXT.en,0.92,$('#settingsVoice').value||undefined)});
   $('#newDictation').addEventListener('click',selectNewDictation);$('#playDictation').addEventListener('click',()=>{if(dictationWord)playSpeech(cleanTargetForSpeech(pathWord(dictationWord)),dictationRate())});$('#repeatDictation').addEventListener('click',()=>{if(dictationWord)playSpeech(cleanTargetForSpeech(pathWord(dictationWord)),Math.max(0.6,dictationRate()-0.12))});
   function checkDictation(){if(!dictationWord||dictationChecked)return;const answer=$('#dictationInput').value.trim();if(!answer){$('#dictationFeedback').hidden=false;$('#dictationFeedback').className='study-answer';$('#dictationFeedback').textContent='Scrivi una risposta prima di controllare.';return}const variants=targetVariants(pathWord(dictationWord)),correct=variants.some(v=>normaliseSpeechText(answer)===v);const st=modeState().stats;st.listeningTotal=(st.listeningTotal||0)+1;if(correct)st.listeningCorrect=(st.listeningCorrect||0)+1;dictationChecked=true;const fb=$('#dictationFeedback');fb.hidden=false;fb.className='study-answer '+(correct?'good':'bad');fb.innerHTML=correct?`<strong>Esatto!</strong> Hai scritto correttamente la parola ascoltata.`:`<strong>Quasi!</strong> La risposta attesa era <b>${esc(pathWord(dictationWord))}</b>. Ascoltala di nuovo e fai attenzione alla grafia.`;$('#dictationSolution').hidden=!correct;$('#dictationSolution').textContent='Risposta: '+pathWord(dictationWord)+' · '+dictationWord[3];$('#showDictationAnswer').disabled=true;$('#checkDictation').disabled=true;persist();renderStudyStats();renderHomeDashboardIfVisible()}
   function revealDictationSolution(){if(!dictationWord)return;$('#dictationSolution').hidden=false;$('#dictationSolution').textContent='Risposta: '+pathWord(dictationWord)+' · '+dictationWord[3];$('#dictationFeedback').hidden=false;$('#dictationFeedback').className='study-answer';$('#dictationFeedback').textContent='Soluzione mostrata: non viene registrata come risposta corretta o sbagliata. Prova a ripeterla e passa a un nuovo dettato.';dictationChecked=true;$('#checkDictation').disabled=true;$('#showDictationAnswer').disabled=true}
@@ -2696,6 +2743,20 @@ renderDailyGate();
 
   // Any manual path choice counts as "today's words seen" so the gate stays quiet afterwards.
   const originalSelectModeForGate=selectMode;selectMode=function(mode){originalSelectModeForGate(mode);try{localStorage.setItem('masterclassGate_v1',JSON.stringify({mode,lastDate:todayKey()}))}catch(_){}}
+  // Lo stato di pratica (domanda del quiz, dettato, dialogo, frase da pronunciare) vive in
+  // variabili globali condivise tra i percorsi: senza azzerarlo qui, cambiando percorso a
+  // metà di un esercizio la domanda/parola del percorso precedente resterebbe caricata e, se
+  // completata, scriverebbe le statistiche SM2 nel percorso sbagliato.
+  const originalSelectModeForStateReset=selectMode;
+  selectMode=function(mode){
+    clearTimeout(quizAutoAdvanceTimer);
+    quizWord=null;quizAnswered=false;quizRated=false;quizAnsweredCorrect=false;quizPreAnswerSnapshot=null;
+    dialogueIndex=0;dialogueTranslationsVisible=false;
+    originalSelectModeForStateReset(mode);
+    if(typeof makeQuiz==='function')makeQuiz();
+    if(typeof chooseRandomPracticeTarget==='function')chooseRandomPracticeTarget();
+    if(typeof selectNewDictation==='function')selectNewDictation();
+  };
 
   // Remember the chosen path and whether today's 10 words were already shown,
   // so the full-screen gate does not interrupt every single visit of the day.
@@ -2723,6 +2784,41 @@ renderDailyGate();
 })();
 
 </script>
-<script>if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+<script>
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>{
+    const hadControllerAtLoad=!!navigator.serviceWorker.controller;
+    function showUpdateBanner(){
+      if(document.getElementById('swUpdateBanner'))return;
+      const bar=document.createElement('div');
+      bar.id='swUpdateBanner';bar.setAttribute('role','status');bar.setAttribute('aria-live','polite');
+      bar.innerHTML='<span>🔄 È disponibile una nuova versione dell’app.</span><button type="button" id="swUpdateReload">Aggiorna ora</button><button type="button" id="swUpdateDismiss" aria-label="Chiudi questo avviso">✕</button>';
+      document.body.appendChild(bar);
+      bar.querySelector('#swUpdateReload').addEventListener('click',()=>location.reload());
+      bar.querySelector('#swUpdateDismiss').addEventListener('click',()=>bar.remove());
+    }
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      // Caso raro: un service worker nuovo è già in attesa quando la pagina si carica
+      // (per esempio una scheda rimasta aperta mentre veniva pubblicato un aggiornamento).
+      if(reg.waiting&&hadControllerAtLoad)showUpdateBanner();
+      reg.addEventListener('updatefound',()=>{
+        const nw=reg.installing;if(!nw)return;
+        nw.addEventListener('statechange',()=>{
+          // "installed" con un controller già presente = vero aggiornamento, non la
+          // primissima installazione della PWA (in quel caso non c'è ancora nulla da
+          // "aggiornare" dal punto di vista di chi la sta usando).
+          if(nw.state==='installed'&&navigator.serviceWorker.controller)showUpdateBanner();
+        });
+      });
+    }).catch(()=>{});
+    // "controllerchange" scatta quando un nuovo service worker prende il controllo della
+    // pagina: se la pagina aveva già un controller al caricamento, non è la prima
+    // installazione, quindi è stata pubblicata una nuova versione mentre l'app era aperta.
+    if(hadControllerAtLoad){
+      navigator.serviceWorker.addEventListener('controllerchange',showUpdateBanner);
+    }
+  });
+}
+</script>
 </body>
 </html>
