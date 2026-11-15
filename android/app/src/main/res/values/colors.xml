@@ -1,0 +1,5 @@
+<resources>
+    <!-- Stesso viola dell'icona PWA già in uso sul sito (icon-512-maskable.png),
+         per coerenza visiva tra l'app Android e il sito/PWA. -->
+    <color name="ic_launcher_background">#4D2C71</color>
+</resources>

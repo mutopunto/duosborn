@@ -1,0 +1,5 @@
+// File di build a livello di progetto: qui si dichiara solo quale versione
+// del plugin Android usare. Il resto della configurazione sta in app/build.gradle.
+plugins {
+    id 'com.android.application' version '8.5.2' apply false
+}

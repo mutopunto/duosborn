@@ -1,0 +1,7 @@
+<resources>
+    <!-- NoActionBar: la pagina web è già tutta l'interfaccia, niente barra sopra. -->
+    <style name="Theme.Duosborn" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/ic_launcher_background</item>
+        <item name="android:statusBarColor">@color/ic_launcher_background</item>
+    </style>
+</resources>
